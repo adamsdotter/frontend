@@ -1,4 +1,4 @@
-/* global _: true, humanized_time_span: true */
+/* global humanized_time_span: true */
 define([
     'knockout',
     'modules/vars',
@@ -8,6 +8,11 @@ define([
     'models/article',
     'modules/content-api',
     'modules/ophan-api',
+    'lodash/collections/forEach',
+    'lodash/collections/map',
+    'lodash/objects/isArray',
+    'lodash/collections/toArray',
+    'lodash/collections/find',
     'js!humanized-time-span'
 ], function(
     ko,
@@ -17,7 +22,12 @@ define([
     authedAjax,
     Article,
     contentApi,
-    ophanApi
+    ophanApi,
+    forEach,
+    map,
+    isArray,
+    toArray,
+    find
 ) {
     function Collection(opts) {
         var self = this;
@@ -54,7 +64,7 @@ define([
         var self = this,
             dropItem = this.drop.bind(this);
 
-        return _.map(_.isArray(groupNames) ? groupNames : [undefined], function(name, index) {
+        return map(isArray(groupNames) ? groupNames : [undefined], function(name, index) {
             return {
                 group: index,
                 name: name,
@@ -127,7 +137,7 @@ define([
         }).then(function(resp) {
             self.response = resp;
             self.state.loadIsPending(false);
-            self.state.hasDraft(_.isArray(self.response.draft));
+            self.state.hasDraft(isArray(self.response.draft));
 
             var dontUpdate = opts.isRefresh && (self.state.loadIsPending() || self.response.lastUpdated === self.collectionMeta.lastUpdated());
             if (!dontUpdate) {
@@ -155,23 +165,23 @@ define([
     Collection.prototype.importList = function(source) {
         var self = this;
 
-        _.each(this.groups, function(group) {
+        forEach(this.groups, function(group) {
             group.articles.removeAll();
         });
 
-        _.toArray(source).forEach(function(item, index) {
+        toArray(source).forEach(function(item, index) {
             var groupInt,
                 group;
 
             groupInt = parseInt((item.meta || {}).group, 10) || 0;
 
-            group = _.find(self.groups, function(g){ return g.group === groupInt; }) || self.groups[0];
+            group = find(self.groups, function(g){ return g.group === groupInt; }) || self.groups[0];
             group.articles.push(new Article(item, self));
         });
     };
 
     Collection.prototype.decorate = function() {
-        _.each(this.groups, function(group) {
+        forEach(this.groups, function(group) {
             contentApi.decorateItems(group.articles());
             ophanApi.decorateItems(group.articles());
         });

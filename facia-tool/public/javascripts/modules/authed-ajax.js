@@ -1,8 +1,7 @@
-/* global _: true */
-define(['modules/vars'], function(vars) {
+define(['modules/vars', 'lodash/objects/assign'], function(vars, assign) {
     function request(opts) {
         return $.ajax(
-            _.extend({}, {dataType: !opts.type || opts.type === 'get' ? 'json' : undefined, contentType: 'application/json'}, opts)
+            assign({}, {dataType: !opts.type || opts.type === 'get' ? 'json' : undefined, contentType: 'application/json'}, opts)
         ).fail(function(xhr) {
             if (xhr.status === 403) {
                 window.location.href = window.location.href;

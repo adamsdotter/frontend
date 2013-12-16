@@ -6,6 +6,8 @@ define([
     'utils/number-with-commas',
     'modules/authed-ajax',
     'knockout',
+    'lodash/chaining/chain',
+    'lodash/objects/isUndefined',
     'js!humanized-time-span'
 ],
 function (
@@ -14,7 +16,9 @@ function (
     populateObservables,
     numberWithCommas,
     authedAjax,
-    ko
+    ko,
+    chain,
+    isUndefined
 ){
     var absUrlHost = 'http://m.guardian.co.uk/';
 
@@ -103,12 +107,12 @@ function (
     Article.prototype.getMeta = function() {
         var self = this;
 
-        return _.chain(this.meta)
+        return chain(this.meta)
             .pairs()
             // is the meta property a not a whitespace-only string ?
-            .filter(function(p){ return !_.isUndefined(p[1]()) && ("" + p[1]()).replace(/\s*/g, '').length > 0; })
+            .filter(function(p){ return !isUndefined(p[1]()) && ("" + p[1]()).replace(/\s*/g, '').length > 0; })
             // does it actually differ from the props value (if any) that it's overwriting ?
-            .filter(function(p){ return  _.isUndefined(self.props[p[0]]) || self.props[p[0]]() !== p[1](); })
+            .filter(function(p){ return  isUndefined(self.props[p[0]]) || self.props[p[0]]() !== p[1](); })
             .map(function(p){ return [p[0], p[1]()]; })
             .object()
             .value();

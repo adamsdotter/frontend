@@ -1,4 +1,3 @@
-/* global _: true */
 define([
     'knockout',
     'modules/vars',
@@ -7,7 +6,11 @@ define([
     'modules/authed-ajax',
     'models/article',
     'modules/content-api',
-    'modules/ophan-api'
+    'modules/ophan-api',
+    'lodash/collections/forEach',
+    'lodash/arrays/last',
+    'lodash/functions/once',
+    'lodash/objects/isFunction'
 ], function(
     ko,
     vars,
@@ -16,7 +19,11 @@ define([
     authedAjax,
     Article,
     contentApi,
-    ophanApi
+    ophanApi,
+    forEach,
+    last,
+    once,
+    isFunction
 ) {
     var sourceList,
         sourceArticle;
@@ -46,7 +53,7 @@ define([
                     event.preventDefault();
 
                     targetList.underDrag(targetArticle.constructor !== Article);
-                    _.each(targetList.articles(), function(item) {
+                    forEach(targetList.articles(), function(item) {
                         var underDrag = (item === targetArticle);
                         if (underDrag !== item.state.underDrag()) {
                             item.state.underDrag(underDrag);
@@ -60,7 +67,7 @@ define([
                     event.preventDefault();
 
                     targetList.underDrag(false);
-                    _.each(targetList.articles(), function(item) {
+                    forEach(targetList.articles(), function(item) {
                         if (item.state.underDrag()) {
                             item.state.underDrag(false);
                         }
@@ -81,20 +88,20 @@ define([
                     if (!targetList.articles || !targetList.underDrag) { return; }
 
                     targetList.underDrag(false);
-                    _.each(targetList.articles(), function(item) {
+                    forEach(targetList.articles(), function(item) {
                         item.state.underDrag(false);
                     });
 
                     // If the item isn't dropped onto an article, asssume it's to be appended *after* the other articles in this group,
                     if (targetArticle.constructor !== Article) {
-                        targetArticle = _.last(targetList.articles());
+                        targetArticle = last(targetList.articles());
                         if (targetArticle) {
                             isAfter = true;
                         // or if there arent't any other articles, after those in the first preceding group that contains articles.
                         } else if (targetList.collection) {
                             var groups = targetList.collection.groups;
                             for (var i = groups.indexOf(targetList) - 1; i >= 0; i -= 1) {
-                                targetArticle = _.last(groups[i].articles());
+                                targetArticle = last(groups[i].articles());
                                 if (targetArticle) {
                                     isAfter = true;
                                     break;
@@ -105,7 +112,7 @@ define([
 
                     position = targetArticle && targetArticle.props ? targetArticle.props.id() : undefined;
 
-                    _.each(parseQueryParams(item), function(url){
+                    forEach(parseQueryParams(item), function(url){
                         if (url && url.match(/^http:\/\/www.theguardian.com/)) {
                             item = url;
                         }
@@ -152,7 +159,7 @@ define([
 
                         ophanApi.decorateItems([article]);
 
-                        if (_.isFunction(targetList.callback)) {
+                        if (isFunction(targetList.callback)) {
                             targetList.callback();
                         }
 
@@ -211,6 +218,6 @@ define([
     }
 
     return {
-        init: _.once(init)
+        init: once(init)
     };
 });
