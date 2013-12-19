@@ -63,34 +63,33 @@ sealed trait Container {
   val containerType: String
   val showMore: Boolean
   val tone: String
-  val headerLink: Boolean
 }
 
-case class NewsContainer(val showMore: Boolean = true, val headerLink: Boolean = true) extends Container {
+case class NewsContainer(val showMore: Boolean = true) extends Container {
   val containerType = "news"
   val tone = "news"
 }
-case class SportContainer(val showMore: Boolean = true, val headerLink: Boolean = true) extends Container {
+case class SportContainer(val showMore: Boolean = true) extends Container {
   val containerType = "sport"
   val tone = "news"
 }
-case class CommentContainer(val showMore: Boolean = true, val headerLink: Boolean = true) extends Container {
+case class CommentContainer(val showMore: Boolean = true) extends Container {
   val containerType = "comment"
   val tone = "comment"
 }
-case class FeaturesContainer(val showMore: Boolean = true, val headerLink: Boolean = true) extends Container {
+case class FeaturesContainer(val showMore: Boolean = true) extends Container {
   val containerType = "features"
   val tone: String = "feature"
 }
-case class PopularContainer(val showMore: Boolean = true, val headerLink: Boolean = true) extends Container {
+case class PopularContainer(val showMore: Boolean = true) extends Container {
   val containerType = "popular"
   val tone: String = "news"
 }
-case class TopStoriesContainer(val showMore: Boolean = true, val headerLink: Boolean = true) extends Container {
+case class TopStoriesContainer(val showMore: Boolean = true) extends Container {
   val containerType = "top-stories"
   val tone = "news"
 }
-case class SectionContainer(val showMore: Boolean = true, val tone: String = "news", val headerLink: Boolean = true) extends Container {
+case class SectionContainer(val showMore: Boolean = true, val tone: String = "news") extends Container {
   val containerType = "section"
 }
 
